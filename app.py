@@ -158,6 +158,40 @@ elif page == THAI['nav_data_input']:
     # ============= DATA INPUT PAGE =============
     st.markdown(f"### {THAI['data_upload_title']}")
 
+    # Guide for data format
+    with st.expander("📝 คำแนะนำการจัดเตรียมข้อมูล", expanded=True):
+        st.markdown("""
+#### รูปแบบข้อมูลที่ถูกต้อง
+ไฟล์ CSV ต้องมี **3 คอลัมน์**:
+
+| คอลัมน์ | ประเภท | ตัวอย่าง | คำอธิบาย |
+|--------|--------|---------|---------|
+| **Treatment** | Text/String | V1, V2, V3 | ชื่อพันธุ์ หรือ ประเภท |
+| **Replication** | Numeric | 1, 2, 3, 4 | ลำดับการทำซ้ำหรือบล็อก |
+| **Response** | Numeric | 45.2, 48.5 | ผลการวัด (ผลผลิต น้ำหนัก ฯลฯ) |
+
+#### ตัวอย่างข้อมูล RCBD ที่ถูกต้อง
+```
+Treatment,Replication,Response
+V1,1,45.2
+V2,1,48.5
+V3,1,42.1
+V1,2,46.1
+V2,2,49.3
+V3,2,41.8
+V1,3,44.8
+V2,3,47.9
+V3,3,40.5
+```
+
+#### ข้อกำหนด
+- ✓ ต้องมีชื่อคอลัมน์ (header) ในแถวแรก
+- ✓ ข้อมูลต้องสมดุล (แต่ละ Treatment ต้องมี Replication จำนวนเท่ากัน)
+- ✓ ไม่มีค่าว่าง (empty cells)
+- ✓ Response ต้องเป็นตัวเลข (numeric)
+        """)
+    st.divider()
+
     uploaded_file = st.file_uploader(
         THAI['data_upload_label'],
         type=['csv'],
@@ -186,33 +220,107 @@ elif page == THAI['nav_data_input']:
                     st.metric("Columns", ", ".join(df.columns.tolist()))
 
                 st.divider()
-                st.markdown("### " + THAI['col_treatment'])
+                st.markdown("### 📋 " + THAI['col_treatment'])
+
+                # Display column information
+                st.markdown("**ชนิดข้อมูลในแต่ละคอลัมน์:**")
+                col_info_cols = st.columns(len(df.columns))
+                for idx, col in enumerate(df.columns):
+                    with col_info_cols[idx]:
+                        dtype = df[col].dtype
+                        unique_count = df[col].nunique()
+                        st.info(f"""
+**{col}**
+- Type: `{dtype}`
+- Unique: {unique_count}
+- Values: {df[col].head(3).tolist()}
+                        """)
+
+                st.divider()
+                st.markdown("**เลือกคอลัมน์สำหรับการวิเคราะห์:**")
 
                 col1, col2, col3 = st.columns(3)
 
                 with col1:
+                    st.markdown("#### 🌾 Treatment (พันธุ์/ประเภท)")
+                    st.markdown("""
+ข้อมูลต้อง:
+- มีชื่อพันธุ์/ประเภท (text/string)
+- ต้องมีตัวอักษรหรือหมายเลข
+- เช่น: V1, V2, V3 หรือ Variety1, Variety2
+                    """)
                     treatment_col = st.selectbox(
-                        THAI['col_treatment'],
+                        "Treatment:",
                         df.columns,
                         key="treatment_select",
-                        label_visibility="collapsed"
+                        help="เลือกคอลัมน์ที่เป็นชื่อพันธุ์/ประเภท"
                     )
 
                 with col2:
+                    st.markdown("#### 📊 Replication (ซ้ำ/บล็อก)")
+                    st.markdown("""
+ข้อมูลต้อง:
+- เป็นหมายเลข (numeric)
+- แทนการทำซ้ำ หรือ บล็อก
+- เช่น: 1, 2, 3, 4
+                    """)
                     replication_col = st.selectbox(
-                        THAI['col_replication'],
+                        "Replication:",
                         df.columns,
                         key="replication_select",
-                        label_visibility="collapsed"
+                        help="เลือกคอลัมน์ที่เป็นการทำซ้ำหรือบล็อก"
                     )
 
                 with col3:
+                    st.markdown("#### 📈 Response (ผลลัพธ์/ผลผลิต)")
+                    st.markdown("""
+ข้อมูลต้อง:
+- เป็นตัวเลข (numeric)
+- ค่าการวัด เช่น ผลผลิต น้ำหนัก
+- เช่น: 45.2, 48.5, 42.1
+                    """)
                     response_col = st.selectbox(
-                        THAI['col_response'],
+                        "Response:",
                         df.columns,
                         key="response_select",
-                        label_visibility="collapsed"
+                        help="เลือกคอลัมน์ที่เป็นผลการวัด (ตัวเลข)"
                     )
+
+                # Show column validation before button
+                st.divider()
+                st.markdown("**✓ ตรวจสอบการเลือกคอลัมน์:**")
+
+                col_check1, col_check2, col_check3 = st.columns(3)
+
+                with col_check1:
+                    is_text_treatment = df[treatment_col].dtype == 'object'
+                    status_treatment = "✓" if is_text_treatment else "⚠️"
+                    st.markdown(f"""
+{status_treatment} **Treatment: {treatment_col}**
+- Type: `{df[treatment_col].dtype}`
+- Unique values: {df[treatment_col].nunique()}
+- {'✓ ถูกต้อง' if is_text_treatment else '⚠️ ควรเป็น text/string'}
+                    """)
+
+                with col_check2:
+                    is_numeric_rep = pd.api.types.is_numeric_dtype(df[replication_col])
+                    status_rep = "✓" if is_numeric_rep else "⚠️"
+                    st.markdown(f"""
+{status_rep} **Replication: {replication_col}**
+- Type: `{df[replication_col].dtype}`
+- Unique values: {df[replication_col].nunique()}
+- {'✓ ถูกต้อง' if is_numeric_rep else '⚠️ ควรเป็น numeric/ตัวเลข'}
+                    """)
+
+                with col_check3:
+                    is_numeric_response = pd.api.types.is_numeric_dtype(df[response_col])
+                    status_response = "✓" if is_numeric_response else "⚠️"
+                    st.markdown(f"""
+{status_response} **Response: {response_col}**
+- Type: `{df[response_col].dtype}`
+- Mean: {df[response_col].mean():.2f}
+- {'✓ ถูกต้อง' if is_numeric_response else '⚠️ ควรเป็น numeric/ตัวเลข'}
+                    """)
 
                 if st.button(THAI['btn_submit'], key="validate_button"):
                     # Validate
