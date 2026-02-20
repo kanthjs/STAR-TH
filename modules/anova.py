@@ -141,7 +141,7 @@ def run_crd_anova(
     """
     formula = f"{response_col} ~ C({treatment_col})"
     model = ols(formula, data=df).fit()
-    anova_table = sm.stats.anova_lm(model, typ=2)
+    anova_table = sm.stats.anova_lm(model, typ=3)
 
     treatment_f = anova_table.loc[f"C({treatment_col})", "F"]
     treatment_p = anova_table.loc[f"C({treatment_col})", "PR(>F)"]

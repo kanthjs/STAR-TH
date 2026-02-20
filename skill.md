@@ -28,7 +28,6 @@ streamlit run app.py
 - **pandas/statsmodels/scipy** — Python replaces R for statistics
 - **Plotly Express** — Interactive charts, minimal code
 - **Claude API** — Thai language AI interpretation of results
-- **Supabase** — Free PostgreSQL cloud DB for saving projects
 - **ReportLab + openpyxl** — PDF/Excel export with Thai font support
 
 ### Core Modules (Development Order)
@@ -43,8 +42,7 @@ streamlit run app.py
 | `pages/04_anova.py` | Main analysis workflow | Phase 1–2 | - |
 | `modules/experimental_design.py` | Design generators | Phase 2 | - |
 | `modules/mean_comparison.py` | Tukey/Duncan/LSD | Phase 2 | - |
-| `storage/supabase_client.py` | Cloud save/load projects | Phase 2 | - |
-| `export/pdf_report.py` | ReportLab PDF with Thai font | Phase 2 | - |
+| `export/pdf_report.py` | ReportLab PDF with IBM Plex Sans Thai font | Phase 2 | - |
 | `export/excel_export.py` | openpyxl export | Phase 2 | - |
 | `ai/claude_interpreter.py` | Claude API Thai interpretation | Phase 3 | - |
 | `modules/gxe_analysis.py` | Multi-site stability analysis | Phase 3 | - |
@@ -70,12 +68,12 @@ streamlit run app.py
 
 ---
 
-### Phase 2 (Weeks 9–16): Full Features
-Add design generators, mean comparison tests, cloud storage, PDF/Excel export
+### Phase 2 (Weeks 9–14): Full Features
+Add design generators, mean comparison tests, PDF/Excel export
 
 ---
 
-### Phase 3 (Weeks 17–24): AI Features
+### Phase 3 (Weeks 15–22): AI Features
 Add Claude Thai interpretation, GxE analysis, stability parameters
 
 ---
@@ -105,13 +103,6 @@ create_box_plot(df, response_col)
 ```python
 interpret_anova_results_thai(anova_results, means_table, trait_name, design_type)
 # Returns: 3–5 paragraphs Thai academic interpretation
-```
-
-### `storage/supabase_client.py`
-```python
-save_project(project_name, df, results)
-load_project(project_id)
-list_user_projects()
 ```
 
 ---
@@ -145,19 +136,16 @@ STAR-TH/
 │   ├── pdf_report.py                # ReportLab PDF
 │   └── excel_export.py              # openpyxl Excel
 │
-├── storage/
-│   └── supabase_client.py           # Supabase cloud DB
-│
 ├── pages/
 │   ├── 01_home.py                   # Landing page
 │   ├── 02_data_input.py             # Upload & preview
 │   ├── 03_experimental_design.py     # Design generator
 │   ├── 04_anova.py                  # Main analysis
 │   ├── 05_visualization.py          # Charts
-│   └── 06_reports.py                # Export & cloud save
+│   └── 06_reports.py                # Export PDF/Excel
 │
 ├── assets/fonts/
-│   └── THSarabunNew.ttf             # Thai font for PDF
+│   └── IBMPlexSansThai-Regular.ttf  # Thai font for PDF
 │
 └── data/
     └── sample_rice_data.csv         # Sample RCBD data
@@ -206,8 +194,7 @@ STAR-TH/
 ### Phase 2 Test
 - [ ] Generate RCBD layout (8 treatments, 4 reps) → verify each block has 8 plots
 - [ ] Run Duncan test → verify letter groupings (e.g., A, AB, BC, C)
-- [ ] Save project to Supabase → reload → verify data integrity
-- [ ] Download PDF → verify Thai font renders
+- [ ] Download PDF → verify Thai font (IBM Plex Sans Thai) renders correctly
 - [ ] Download Excel → verify sheets (raw data, means, ANOVA table)
 
 ### Phase 3 Test
@@ -228,7 +215,6 @@ statsmodels==0.14.1        # ANOVA, regressions
 pingouin==0.5.3            # Pairwise tests
 plotly==5.18.0             # Interactive charts
 anthropic==0.18.1          # Claude API
-supabase==2.3.4            # Cloud DB
 reportlab==4.1.0           # PDF with Thai font
 openpyxl==3.1.2            # Excel export
 scikit-posthocs==0.8.1     # Duncan, Dunn, etc.
@@ -242,14 +228,10 @@ python-dotenv==1.0.0       # .env file support
 ### Streamlit Secrets (`.streamlit/secrets.toml`)
 ```toml
 ANTHROPIC_API_KEY = "sk-ant-..."
-SUPABASE_URL = "https://your-project.supabase.co"
-SUPABASE_KEY = "eyJhbGci..."
 ```
 
 ### GitHub Secrets (for CI/CD)
 - `ANTHROPIC_API_KEY`
-- `SUPABASE_URL`
-- `SUPABASE_KEY`
 
 ---
 
@@ -260,7 +242,7 @@ SUPABASE_KEY = "eyJhbGci..."
 mkdir -p pages
 
 # Create config directory
-mkdir -p config modules visualization export storage ai assets/fonts
+mkdir -p config modules visualization export ai assets/fonts
 
 # Run app locally
 streamlit run app.py
@@ -299,5 +281,4 @@ git push origin main
 - **statsmodels ANOVA** — https://www.statsmodels.org/stable/generated/statsmodels.formula.api.ols.html
 - **Plotly** — https://plotly.com/python/
 - **Claude API** — https://docs.anthropic.com/claude/reference/getting-started-with-the-api
-- **Supabase** — https://supabase.com/docs/reference/python
 - **ReportLab Thai** — https://www.reportlab.com/docs/reportlab-userguide.pdf

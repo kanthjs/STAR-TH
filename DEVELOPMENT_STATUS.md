@@ -94,16 +94,12 @@ STAR-TH/
 │   ├── pdf_report.py              ⏳ Phase 2 (empty)
 │   └── excel_export.py            ⏳ Phase 2 (empty)
 │
-├── storage/
-│   ├── __init__.py                ✓
-│   └── supabase_client.py         ⏳ Phase 2 (empty)
-│
 ├── ai/
 │   ├── __init__.py                ✓
 │   └── claude_interpreter.py      ⏳ Phase 3 (empty)
 │
 ├── assets/fonts/
-│   └── THSarabunNew.ttf           ⏳ Needs to be added
+│   └── IBMPlexSansThai-Regular.ttf ⏳ Needs to be added
 │
 └── data/
     └── sample_rice_data.csv       ✓ Test data
@@ -132,7 +128,6 @@ streamlit run app.py
 ❌ **Not yet implemented:**
 - Experimental design generation (Phase 2)
 - Mean comparison tests (LSD, Tukey, Duncan) - Phase 2
-- Cloud storage (Supabase) - Phase 2
 - PDF/Excel export - Phase 2
 - GxE analysis - Phase 3
 - Claude AI interpretation - Phase 3
@@ -147,19 +142,15 @@ streamlit run app.py
 - `run_tukey_hsd()`, `run_duncan_test()`, `run_lsd_test()`
 - Means table with letter groupings
 
-**Week 13–14:** Cloud Storage
-- Supabase integration for saving/loading projects
-
-**Week 15–16:** Export
-- PDF reports with Thai font (ReportLab)
+**Week 13–14:** Export
+- PDF reports with Thai font (ReportLab) - using IBM Plex Sans Thai
 - Excel export with multiple sheets (openpyxl)
 
 ### Known Quirks / TODOs
 
-1. **Thai font for PDF:** Need to add `assets/fonts/THSarabunNew.ttf` for PDF export
+1. **Thai font for PDF:** Need to add `assets/fonts/IBMPlexSansThai-Regular.ttf` for PDF export
 2. **Claude API:** Need `.streamlit/secrets.toml` with `ANTHROPIC_API_KEY` for Phase 3
-3. **Supabase:** Need to set up free tier and add credentials for Phase 2
-4. **Deployment:** Not yet deployed to Streamlit Cloud
+3. **Deployment:** Not yet deployed to Streamlit Cloud
 
 ### Code Quality
 
@@ -178,7 +169,7 @@ streamlit run app.py
 
 ### Deployment Checklist (for later)
 
-- [ ] Add `assets/fonts/THSarabunNew.ttf`
+- [ ] Add `assets/fonts/IBMPlexSansThai-Regular.ttf`
 - [ ] Create `.streamlit/secrets.toml` with dummy API keys
 - [ ] Push to GitHub
 - [ ] Connect to Streamlit Community Cloud
